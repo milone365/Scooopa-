@@ -23,31 +23,44 @@ public class DeckController : MonoBehaviour
         
     }
 
+    //set four card on the table
     void setTable()
     {
         int spawned = 0;
         while(spawned<4)
         {
-            List<Card> temp = new List<Card>();
-            int rnd = Random.Range(0, deck.Count);
-            table.addCardToTable(deck[rnd]);
-            //remove from list and sort
-            deck.RemoveAt(rnd);
-           
-            //use temporary list for sort the deck
-            for(int i=0;i<deck.Count;i++)
-            {
-                if(deck[i]!=null)
-                {
-                    temp.Add(deck[i]);
-                }
-            }
-            deck = temp;
-            spawned++;
+           table.addCardToTable(DrawedCard());
+           spawned++;
         }
     }
     
+    Card DrawedCard()
+    {
+        //temp card for return
+        Card c;
+        //blanck temp list
+        List<Card> temp = new List<Card>();
+        //random card in the deck
+        int rnd = Random.Range(0, deck.Count);
+        //returning card became lick deck's card index
+        c = deck[rnd];
+        //remove from list and sort
+        deck.RemoveAt(rnd);
 
+        //use temporary list for sort the deck
+        for (int i = 0; i < deck.Count; i++)
+        {
+            //id is not null add tu temporary
+            if (deck[i] != null)
+            {
+                temp.Add(deck[i]);
+            }
+        }
+        //deck became like temporary
+        deck = temp;
+        //return card
+        return c;
+    }
     //build deck when start the game
     void BuidDeck()
     {
