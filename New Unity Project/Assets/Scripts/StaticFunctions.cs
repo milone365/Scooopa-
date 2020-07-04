@@ -31,7 +31,8 @@ public class StaticFunctions : MonoBehaviour
         }
         return null;
     }
-
+   
+    //return combinations of cards
     public static List<Card>getTakableCards(List<Card> tableCards, int valor)
     {
         List<Card> temp = new List<Card>();
@@ -84,5 +85,77 @@ public class StaticFunctions : MonoBehaviour
         }
 
         return null;
+    }
+
+    //calculate point of cards for premiere
+    public static int getCardPoint(int value)
+    {
+        int v = 10;
+        switch(value)
+        {
+            case 1:
+                v = 16;
+                break;
+            case 2:
+                v = 12;
+                break;
+            case 3:
+                v = 13;
+                break;
+            case 4:
+                v = 14;
+                break;
+            case 5:
+                v = 15;
+                break;
+            case 6:
+                v = 18;
+                break;
+            case 7:
+                v = 21;
+                break;
+            case 8:
+                v = 10;
+                break;
+            case 9:
+                v = 10;
+                break;
+            case 10:v = 10;
+                break;
+        }
+        return v;
+    }
+
+    //calculate most height card for premiere
+    public static int getHeightersPoint(List<Card>cards)
+    {
+        int maxValue = 0;
+        foreach(var c in cards)
+        {
+            int temp = getCardPoint(c.value);
+            if (maxValue < temp)
+                maxValue = temp;
+        }
+        return maxValue;
+    }
+
+    //return all card of selected seed
+    public static List<Card> getAllCardOfSeed(List<Card>collected,string selected)
+    {
+        List<Card> returningDeck = new List<Card>();
+        foreach(var item in collected)
+        {
+            if(item.seed==selected)
+            {
+                returningDeck.Add(item);
+            }
+        }
+        return returningDeck;
+    }
+
+    //calculate the number of cards
+    public static int getCountOfCards(List<Card> cards)
+    {
+        return cards.Count;
     }
 }

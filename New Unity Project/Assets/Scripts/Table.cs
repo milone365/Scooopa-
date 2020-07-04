@@ -76,8 +76,6 @@ public class Table : MonoBehaviour
     }
     #endregion
 
-
-
     void Scopa()
     {
         currentPlayer.scopa++;
@@ -117,7 +115,7 @@ public class Table : MonoBehaviour
         StartCoroutine(playedCardUpdate(c, e));
     }
 
-   IEnumerator playedCardUpdate(Card c,Entity e)
+    IEnumerator playedCardUpdate(Card c,Entity e)
     {
         //for see the played card in red or blue zone
         if(e==player)
