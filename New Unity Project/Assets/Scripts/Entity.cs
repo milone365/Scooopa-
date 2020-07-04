@@ -17,6 +17,19 @@ public class Entity : MonoBehaviour
     Table table;
     public Card playedCard;
 
+    public int getNumOfCard()
+    {
+        int num = 0;
+        for (int i = 0; i <hand.Count;i++)
+        {
+            if(hand[i]!=null)
+            {
+                num++;
+            }
+        }
+        return num;
+    }
+
     public virtual void INIT(Table t)
     {
         hand_images = GetComponentsInChildren<Image>();
@@ -37,6 +50,27 @@ public class Entity : MonoBehaviour
         table.PlayCard(playedCard, this);
     }
     
+    public void PcPlayCard()
+    {
+        
+        int rnd =0;
+        rnd = Random.Range(0, hand.Count);
+        playedCard = hand[rnd];
+        int index = 0;
+        //use effet for delete images
+        for(int i=0;i<hand.Count-1;i++)
+        {
+            index++;
+        }
+        //remove from list
+        hand.RemoveAt(rnd);
+        //make green image
+        hand_images[index].sprite = green;
+        table.PlayCard(playedCard, this);
+
+    }
+
+
     //take new card , for player
     public void DrawCardFromDeck(Card c,int index)
     {

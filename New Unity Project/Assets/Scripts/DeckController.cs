@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using System.Linq;
+
 
 public class DeckController : MonoBehaviour
 {
@@ -13,6 +13,8 @@ public class DeckController : MonoBehaviour
     Entity player;
     Entity pc;
     bool cardEnded = false;
+    Image deckImage;
+    
     public void Init(Table t)
     {
         table = t;
@@ -27,6 +29,7 @@ public class DeckController : MonoBehaviour
         pc.INIT(t);
         //assign card to players
         giveCardToPlayers();
+        deckImage = GameObject.Find("deckImage").GetComponent<Image>();
     }
 
     private void Update()
@@ -119,11 +122,11 @@ public class DeckController : MonoBehaviour
         pc.resetCardList();
         //give new cards
         giveCardToPlayers();
-        //active player buttons
-        table.activePlayerButtons();
         if(deck.Count<1)
         {
             cardEnded = true;
+            //delete deck back image
+            deckImage.enabled = false;
         }
     }
     void GameOver()

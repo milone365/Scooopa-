@@ -6,6 +6,7 @@ using UnityEngine.UI;
 
 public class Table : MonoBehaviour
 {
+    GameObject Scopatxt;
     public Image[] tablecardBorders;
     public List<Card> tableCards = new List<Card>();
     Image[] tablecards_images;
@@ -17,11 +18,10 @@ public class Table : MonoBehaviour
     Image playerUsedCard = null;
     [SerializeField]
     Image pcUsedCard = null;
-    bool canMove = false;
-    float timerCounter = 0;
-    float timeDelay = 1.5f;
-    DeckController deck;
+ DeckController deck;
     Button[] playerButtons;
+
+  
     void Start()
     {
         tablecards_images = GetComponentsInChildren<Image>();
@@ -38,6 +38,9 @@ public class Table : MonoBehaviour
         //initialize deck and pass this reference
         deck =GetComponentInChildren<DeckController>();
         deck.Init(this);
+        Scopatxt = GameObject.Find("Scopa");
+        Scopatxt.SetActive(false);
+        currentPlayer = player;
     }
 
     void Update()
@@ -45,33 +48,35 @@ public class Table : MonoBehaviour
         Draw();
     }
 
-    #region Remove
+    #region Add_Remove
+    public void addCardToTable(Card c)
+    {
+        Card newcard = c;
+        tableCards.Add(newcard);
+    }
     void removeCardFromTable(int v)
     {
         tableCards.RemoveAt(v);
     }
     #endregion
 
-    public void addCardToTable(Card c)
-    {
-        Card newcard = c;
-        tableCards.Add(newcard);
-    }
-
+    #region Graphic
     public void Draw()
     {
-        if (tableCards.Count < 1) return;
         //set cards
-        for (int i = 0; i < tablecards_images.Length-1; i++)
+        for (int i = 0; i < tablecards_images.Length - 1; i++)
         {
-           tablecards_images[i].enabled = false;
+            tablecards_images[i].enabled = false;
         }
-        for(int i=0;i<tableCards.Count;i++)
+        for (int i = 0; i < tableCards.Count; i++)
         {
             tablecards_images[i].enabled = true;
             tablecards_images[i].sprite = tableCards[i].img;
         }
     }
+    #endregion
+
+
 
     void Scopa()
     {
@@ -80,37 +85,30 @@ public class Table : MonoBehaviour
     //change turn
     void goToNextTurn()
     {
+        //if players don't have more card draw 3 
+        if (player.getNumOfCard() == 0 && pc.getNumOfCard() == 0)
+        {
+            deck.newTurn();
+        }
         currentTurn++;
         if (currentTurn%2==0)
         {
-            currentPlayer = player; 
+            //enable button for play cards
+            currentPlayer = player;
+            activePlayerButtons(true);
         }
         else
         {
-            //set pc turn
             currentPlayer = pc;
-            canMove = true;
-        }
+            //player can not play card's on enemy turn
+            activePlayerButtons(false);
+            pcTurnManagement();
+        }  
     }
-    void TurnManagement()
+    void pcTurnManagement()
     {
-        if(currentPlayer==pc)
-        {
-              if (canMove)
-                {
-                    timerCounter += Time.deltaTime;
-                    //reset timer
-                    if (timerCounter >= timeDelay)
-                    {
-                        canMove = false;
-                        timerCounter = 0;
-                        int rnd = Random.Range(0, 2);
-                        pc.PlayCard(rnd);
-                        StartCoroutine(playedCardUpdate(pc.playedCard,currentPlayer));
-                        
-                    }
-               }
-        }
+        //reset timer
+        pc.PcPlayCard();
     }
    
 
@@ -132,58 +130,72 @@ public class Table : MonoBehaviour
             pcUsedCard.enabled = true;
             pcUsedCard.sprite = c.img;
         }
-        HightLightEqualCard(c.value);
-        yield return new WaitForSeconds(1.5f);
-        DeHighLighAllCards();
-        //if can not make combo add card to table
-        yield return new WaitForSeconds(1f);
         //create temp card for check
-        Card equal = getEqualCard(c.value);
+        Card equal = StaticFunctions.getEqualCard(tableCards,c.value);
         //add both cards if equals
         if(equal==null)
         {
-            addCardToTable(c);
+           List<Card>temp= StaticFunctions.getTakableCards(tableCards, c.value);
+            if(temp!=null)
+            {
+                //active yellow border
+                foreach (var t in temp)
+                {
+                    HightLightSelectedCard(t);
+                }
+                //pause
+                yield return new WaitForSeconds(1.5f);
+                //take the cards
+                foreach (var t in temp)
+                {
+                    takeCard(t);
+                    removeCardFromTable(StaticFunctions.getTableIndex(tableCards,t));
+                }
+            }
+            else
+            {
+                addCardToTable(c);
+            }
            
         }
         else
         {
-            takeCard(equal, e);
-            takeCard(c, e);
-            removeCardFromTable(TableCardsIndex(equal));
+            //colorate border
+            HightLightEqualCard(c.value);
+            yield return new WaitForSeconds(1.5f);
+            //add taked card to player pile
+            takeCard(equal);
+            takeCard(c);
+            //remove card from table
+            removeCardFromTable(StaticFunctions.getTableIndex(tableCards,equal));
         }
-        
-        
+        DeHighLighAllCards();
         yield return new WaitForSeconds(1.5f);
-        //goToNextTurn();
+        //scopa check, if are not cardon table after taking add one point
+       if (tableCards.Count<1)
+        {
+            Scopatxt.SetActive(true);
+            Scopa();
+            yield return new WaitForSeconds(1.5f);
+            Scopatxt.SetActive(false);
+        }
+       goToNextTurn();
     }
 
-
-    public void activePlayerButtons()
+    public void activePlayerButtons(bool value)
     {
         foreach(var b in playerButtons)
         {
-            b.enabled = true;
+            b.enabled = value;
         }
     }
 
     #region Taking
-    //return a single card to take if is eqaul to played card
-    Card getEqualCard(int value)
+    
+   
+    void takeCard(Card c)
     {
-        for (int i = 0; i < tableCards.Count; i++)
-        {
-            if (value == tableCards[i].value)
-            {
-                
-                return tableCards[i];
-               
-            }
-        }
-        return null;
-    }
-    void takeCard(Card c, Entity e)
-    {
-        e.CollectCard(c);
+        currentPlayer.CollectCard(c);
     }
     #endregion
 
@@ -193,7 +205,7 @@ public class Table : MonoBehaviour
         //make cards blanck
         pcUsedCard.enabled = false;
         playerUsedCard.enabled = false;
-        for (int i = 0; i < tableCards.Count; i++)
+        for (int i = 0; i < tablecards_images.Length; i++)
         {
           tablecardBorders[i].enabled = false;
         }
@@ -211,19 +223,19 @@ public class Table : MonoBehaviour
             }
         }
     }
-    #endregion
-
-    #region Returning
-    int TableCardsIndex(Card c)
+    void HightLightSelectedCard(Card c)
     {
+        int index = 0;
         for (int i = 0; i < tableCards.Count; i++)
         {
             if (c == tableCards[i])
             {
-                return i;
+                index = i;
+                tablecardBorders[index].enabled = true;
+                break;
             }
         }
-        return 0;
     }
     #endregion
+
 }
