@@ -3,30 +3,41 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
+
 public class Table : MonoBehaviour
 {
+    public Image[] tablecardBorders;
     public List<Card> tableCards = new List<Card>();
     Image[] tablecards_images;
-    bool taking = false;
     Entity currentPlayer=null;
-    Player player;
-    CPU pc;
+    public Entity player;
+    public Entity pc;
     int currentTurn = 0;
-
+    [SerializeField]
+    Image playerUsedCard = null;
+    [SerializeField]
+    Image pcUsedCard = null;
     bool canMove = false;
     float timerCounter = 0;
     float timeDelay = 1.5f;
-
+    DeckController deck;
+    Button[] playerButtons;
     void Start()
     {
         tablecards_images = GetComponentsInChildren<Image>();
-        foreach(var item in tablecards_images)
+        
+       //deactive used card images
+       playerUsedCard.enabled = false;
+       pcUsedCard.enabled = false;
+        playerButtons = player.GetComponentsInChildren<Button>();
+        //deactive yellow borders
+        foreach(var b in tablecardBorders)
         {
-            item.enabled = false;
+            b.enabled = false;
         }
-        //find objects
-        player = FindObjectOfType<Player>();
-        pc = FindObjectOfType<CPU>();
+        //initialize deck and pass this reference
+        deck =GetComponentInChildren<DeckController>();
+        deck.Init(this);
     }
 
     void Update()
@@ -35,95 +46,30 @@ public class Table : MonoBehaviour
     }
 
     #region Remove
-
-    //remove card and sort list
-    void removeCard(int v)
+    void removeCardFromTable(int v)
     {
-        //add card to current player
-        if (currentPlayer != null)
-            currentPlayer.AddCardToCollection(tableCards[v]);
-        //remove from table list
         tableCards.RemoveAt(v);
-        //use temp for resort table list
-        List<Card> temp = new List<Card>();
-        for (int i = 0; i < tableCards.Count; i++)
-        {
-            if (tableCards[i] != null)
-                temp.Add(tableCards[i]);
-        }
-        tableCards = temp;
-        //
-        if (tableCards.Count == 0)
-        {
-            Scopa();
-        }
     }
-
-    public void removeCardFromtable(int value)
-    {
-        bool removed = false;
-        for (int i = 0; i < tableCards.Count; i++)
-        {
-            //remove single intere card if is on the table
-            if (tableCards[i].value == value)
-            {
-                removeCard(i);
-                removed = true;
-            }
-        }
-        if (removed) return;
-        int index = tableCards.Count;
-
-        //check combination 
-        for (int i = 0; i < index; i++)
-        {
-            for (int j = 0; j < index; j++)
-            {
-                if (j != i)
-                {
-                    //sum of the cards
-                    int v1 = tableCards[i].value;
-                    int v2 = tableCards[j].value;
-
-                    //remove both cards
-                    if (v1 + v2 == value)
-                    {
-                        removeCard(v1);
-                        removeCard(v2);
-                        break;
-                    }
-                }
-
-            }
-        }
-
-    }
-
-
     #endregion
 
     public void addCardToTable(Card c)
     {
         Card newcard = c;
         tableCards.Add(newcard);
-        
     }
 
     public void Draw()
     {
-        if (tableCards.Count < 0) return;
+        if (tableCards.Count < 1) return;
         //set cards
-        for (int i = 0; i < tablecards_images.Length; i++)
+        for (int i = 0; i < tablecards_images.Length-1; i++)
         {
-            if(i<=tableCards.Count)
-            {
-                tablecards_images[i].sprite = tableCards[i].img;
-                tablecards_images[i].enabled = true;
-            }
-            else
-            {
-                tablecards_images[i].enabled = false;
-            }
+           tablecards_images[i].enabled = false;
+        }
+        for(int i=0;i<tableCards.Count;i++)
+        {
+            tablecards_images[i].enabled = true;
+            tablecards_images[i].sprite = tableCards[i].img;
         }
     }
 
@@ -135,9 +81,9 @@ public class Table : MonoBehaviour
     void goToNextTurn()
     {
         currentTurn++;
-        if(currentTurn%2==0)
+        if (currentTurn%2==0)
         {
-            currentPlayer = player;
+            currentPlayer = player; 
         }
         else
         {
@@ -160,12 +106,124 @@ public class Table : MonoBehaviour
                         timerCounter = 0;
                         int rnd = Random.Range(0, 2);
                         pc.PlayCard(rnd);
-                        goToNextTurn();
+                        StartCoroutine(playedCardUpdate(pc.playedCard,currentPlayer));
+                        
                     }
-
-                }
-            
-           
+               }
         }
     }
+   
+
+    public void PlayCard(Card c, Entity e)
+    {
+        StartCoroutine(playedCardUpdate(c, e));
+    }
+
+   IEnumerator playedCardUpdate(Card c,Entity e)
+    {
+        //for see the played card in red or blue zone
+        if(e==player)
+        {
+            playerUsedCard.enabled = true;
+            playerUsedCard.sprite = c.img;
+        }
+        else
+        {
+            pcUsedCard.enabled = true;
+            pcUsedCard.sprite = c.img;
+        }
+        HightLightEqualCard(c.value);
+        yield return new WaitForSeconds(1.5f);
+        DeHighLighAllCards();
+        //if can not make combo add card to table
+        yield return new WaitForSeconds(1f);
+        //create temp card for check
+        Card equal = getEqualCard(c.value);
+        //add both cards if equals
+        if(equal==null)
+        {
+            addCardToTable(c);
+           
+        }
+        else
+        {
+            takeCard(equal, e);
+            takeCard(c, e);
+            removeCardFromTable(TableCardsIndex(equal));
+        }
+        
+        
+        yield return new WaitForSeconds(1.5f);
+        //goToNextTurn();
+    }
+
+
+    public void activePlayerButtons()
+    {
+        foreach(var b in playerButtons)
+        {
+            b.enabled = true;
+        }
+    }
+
+    #region Taking
+    //return a single card to take if is eqaul to played card
+    Card getEqualCard(int value)
+    {
+        for (int i = 0; i < tableCards.Count; i++)
+        {
+            if (value == tableCards[i].value)
+            {
+                
+                return tableCards[i];
+               
+            }
+        }
+        return null;
+    }
+    void takeCard(Card c, Entity e)
+    {
+        e.CollectCard(c);
+    }
+    #endregion
+
+    #region HighLight
+    void DeHighLighAllCards()
+    {
+        //make cards blanck
+        pcUsedCard.enabled = false;
+        playerUsedCard.enabled = false;
+        for (int i = 0; i < tableCards.Count; i++)
+        {
+          tablecardBorders[i].enabled = false;
+        }
+    }
+    void HightLightEqualCard(int c)
+    {
+        int index = 0;
+        for (int i = 0; i < tableCards.Count; i++)
+        {
+            if (c == tableCards[i].value)
+            {
+                index = i;
+                tablecardBorders[index].enabled = true;
+                break;
+            }
+        }
+    }
+    #endregion
+
+    #region Returning
+    int TableCardsIndex(Card c)
+    {
+        for (int i = 0; i < tableCards.Count; i++)
+        {
+            if (c == tableCards[i])
+            {
+                return i;
+            }
+        }
+        return 0;
+    }
+    #endregion
 }

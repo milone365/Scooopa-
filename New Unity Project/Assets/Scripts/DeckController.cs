@@ -10,19 +10,32 @@ public class DeckController : MonoBehaviour
     string[] seeds = { StaticStrings.cup, StaticStrings.gold, StaticStrings.wand, StaticStrings.sword };
     public List<Card> deck = new List<Card>();
     Table table;
-    void Start()
+    Entity player;
+    Entity pc;
+    bool cardEnded = false;
+    public void Init(Table t)
     {
-        table = FindObjectOfType<Table>();
+        table = t;
+        player = table.player;
+        pc = table.pc;
+        //load deck
         BuidDeck();
+        //set up first 4 cards
         setTable();
+        //initialize player and pc and pass table reference
+        player.INIT(t);
+        pc.INIT(t);
+        //assign card to players
+        giveCardToPlayers();
     }
 
-    // Update is called once per frame
-    void Update()
+    private void Update()
     {
-        
+        if(Input.GetKeyDown(KeyCode.Z))
+        {
+            newTurn();
+        }
     }
-
     //set four card on the table
     void setTable()
     {
@@ -32,32 +45,19 @@ public class DeckController : MonoBehaviour
            table.addCardToTable(DrawedCard());
            spawned++;
         }
+        
     }
     
     Card DrawedCard()
     {
         //temp card for return
         Card c;
-        //blanck temp list
-        List<Card> temp = new List<Card>();
-        //random card in the deck
-        int rnd = Random.Range(0, deck.Count);
+       //random card in the deck
+        int rnd = Random.Range(0, deck.Count-1);
         //returning card became lick deck's card index
         c = deck[rnd];
         //remove from list and sort
         deck.RemoveAt(rnd);
-
-        //use temporary list for sort the deck
-        for (int i = 0; i < deck.Count; i++)
-        {
-            //id is not null add tu temporary
-            if (deck[i] != null)
-            {
-                temp.Add(deck[i]);
-            }
-        }
-        //deck became like temporary
-        deck = temp;
         //return card
         return c;
     }
@@ -93,6 +93,43 @@ public class DeckController : MonoBehaviour
         }
     }
 
+    //assign 3 cards for every player
+    void giveCardToPlayers()
+    {
+        if (cardEnded) return;
+            int spawned = 0;
+        while (spawned < 3)
+        {
+            player.DrawCardFromDeck(DrawedCard(),spawned);
+            pc.DrawCardFromDeck(DrawedCard(),spawned);
+            spawned++;
+        }
+
+    }
+
+    public void newTurn()
+    {
+        if(cardEnded)
+        {
+            GameOver();
+            return;
+        }
+        //reset hands list
+        player.resetCardList();
+        pc.resetCardList();
+        //give new cards
+        giveCardToPlayers();
+        //active player buttons
+        table.activePlayerButtons();
+        if(deck.Count<1)
+        {
+            cardEnded = true;
+        }
+    }
+    void GameOver()
+    {
+        Debug.Log("GAMEOVER");
+    }
 }
 
 [System.Serializable]

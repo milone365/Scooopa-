@@ -1,36 +1,75 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 
-public class Entity : MonoBehaviour, Icollect
+public class Entity : MonoBehaviour
 {
+    public bool isPlayer = false;
+    public Sprite back;
+    public Sprite green;
     public List<Card> collectedCards;
+    Image[] hand_images;
     List<Card> hand = new List<Card>();
     public int scopa = 0;
     public int points=0;
+    Table table;
+    public Card playedCard;
 
+    public virtual void INIT(Table t)
+    {
+        hand_images = GetComponentsInChildren<Image>();
+        table = t;
+    }
     //remove card from hand and make in play
     public void PlayCard(int value)
     {
-        hand.RemoveAt(value);
+        if(hand[value] == null)return;
+        playedCard = hand[value];
+        //reset
+        hand[value] = null;
+        //make green image
+        hand_images[value].sprite = green;
+        //disabilititate button
+        hand_images[value].GetComponent<Button>().enabled = false;
+        //
+        table.PlayCard(playedCard, this);
     }
     
-    //add to collected card
-    public void AddCardToCollection(Card c)
+    //take new card , for player
+    public void DrawCardFromDeck(Card c,int index)
     {
-        collectedCards.Add(c);
+        hand.Add(c);
+        if (index > hand_images.Length) return;
+        //return back if not is player
+        Sprite s = null;
+        if(isPlayer)
+        {
+            s = c.img;
+        }
+        else
+        {
+            s = back;
+        }
+        hand_images[index].sprite =s;
     }
-    //take new card
-    public void DrawCard(Card c)
+
+    //for pc
+    public void DrawCardFromDeck(Card c)
     {
         hand.Add(c);
     }
+
+    //hand comeBacktoZero
+    public void resetCardList()
+    {
+        hand.Clear();
+    }
+
+    public void CollectCard(Card c)
+    {
+        collectedCards.Add(c);
+    }
 }
 
-public  interface Icollect
-{
-    void AddCardToCollection(Card c);
-    void PlayCard(int value);
-    void DrawCard(Card c);
-}
