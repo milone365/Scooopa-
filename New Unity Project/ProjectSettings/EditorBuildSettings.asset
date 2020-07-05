@@ -12,6 +12,9 @@ EditorBuildSettings:
     path: Assets/Scenes/Scopa.unity
     guid: 4cb9ca4be39435b449c3eb68b4f9c029
   - enabled: 1
+    path: Assets/Scenes/MultiplayerExp.unity
+    guid: 9cce50b9fa11ac54d85b07eb801570f8
+  - enabled: 1
     path: Assets/Scenes/Scopone.unity
     guid: d7cdf139d6edc0d4a99fd358a61ff903
   m_configObjects: {}

@@ -1,5 +1,5 @@
 sceneSetups:
-- path: Assets/Scenes/Scopone.unity
+- path: Assets/Scenes/MultiplayerExp.unity
   isLoaded: 1
   isActive: 1
   isSubScene: 0
