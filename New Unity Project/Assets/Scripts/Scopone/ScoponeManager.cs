@@ -26,7 +26,7 @@ public class ScoponeManager
         }
         if(endgame>3)
         {
-            goToTheEnd();
+            table.goToTheEnd();
             return;
         }
         table.allPlayers[currentTurn].HilightPlayer(false);
@@ -54,8 +54,4 @@ public class ScoponeManager
        
     }
 
-    void goToTheEnd()
-    {
-        table.cleanTable();
-    }
 }

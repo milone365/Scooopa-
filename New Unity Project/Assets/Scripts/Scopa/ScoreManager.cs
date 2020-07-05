@@ -68,7 +68,7 @@ public class ScoreManager : MonoBehaviour
     }
     //
     //premiere
-    int calcualtePremiere(Entity e, List<Card> collected)
+    int calcualtePremiere(List<Card> collected)
     {
         int point = 0;
         List<Card> golds = StaticFunctions.getAllCardOfSeed(collected, StaticStrings.gold);
@@ -84,8 +84,8 @@ public class ScoreManager : MonoBehaviour
     //premier check
     public void PremiereCheck()
     {
-        int playerScore = calcualtePremiere(player, player.collectedCards);
-        int pcScore = calcualtePremiere(pc, pc.collectedCards);
+        int playerScore = calcualtePremiere(player.collectedCards);
+        int pcScore = calcualtePremiere(pc.collectedCards);
         if(playerScore>pcScore)
         {
             playerPoints++;

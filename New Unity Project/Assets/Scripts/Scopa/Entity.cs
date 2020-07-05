@@ -69,18 +69,69 @@ public class Entity : MonoBehaviour
     
     public void PcPlayCard()
     {
-        
-        int rnd =0;
-        rnd = Random.Range(0, hand.Count);
-        playedCard = hand[rnd];
+        if(table==null)
+        {
+            table = FindObjectOfType<Table>();
+        }
         int index = 0;
+        List<Card> temp = new List<Card>();
+        for(int i=0;i<hand.Count;i++)
+        {
+            List<Card>temp2=(StaticFunctions.getTakableCards(table.tableCards, hand[i].value));
+            
+            if (temp2 != null)
+            {
+                temp.AddRange(temp2);
+                index = i;
+                break;
+            }
+                
+        }
+        //checl possible combos
+        if(temp.Count>0)
+        {
+            playedCard = hand[index];
+            hand.RemoveAt(index);
+            index = 0;
+
+        }
+        else
+        {
+            bool equalcard = false;
+            //check if the are an equal card
+            for (int i = 0; i < table.tableCards.Count; i++)
+            {
+                for (int j = 0; j < hand.Count; j++)
+                {
+                    if (hand[j].value == table.tableCards[i].value)
+                    {
+                        equalcard = true;
+                        index = j;
+                        break;
+                    }
+                }
+            }
+            if (!equalcard)
+            {
+                int rnd = 0;
+                rnd = Random.Range(0, hand.Count);
+                playedCard = hand[rnd];
+                //remove from list
+                hand.RemoveAt(rnd);
+            }
+            else
+            {
+
+                playedCard = hand[index];
+                hand.RemoveAt(index);
+                index = 0;
+            }
+        }
         //use effet for delete images
-        for(int i=0;i<hand.Count-1;i++)
+        for (int i = 0; i < hand.Count - 1; i++)
         {
             index++;
         }
-        //remove from list
-        hand.RemoveAt(rnd);
         //make green image
         hand_images[index].sprite = green;
         table.PlayCard(playedCard, this);

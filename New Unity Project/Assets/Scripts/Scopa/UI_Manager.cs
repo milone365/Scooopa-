@@ -53,10 +53,15 @@ public class UI_Manager : MonoBehaviour
         if(endPanel!=null)
         endPanel.SetActive(false);
     }
+    public void openEndPanel()
+    {
+        if (endPanel != null)
+            endPanel.SetActive(true);
+    }
     //
     public void EndGamePanel()
     {
-        endPanel.SetActive(true);
+        openEndPanel();
         int ps = scoremanager.playerPoints;
         int pc_s= scoremanager.pcPoints;
         playerScoreTxt.text = ps.ToString();

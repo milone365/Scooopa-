@@ -17,6 +17,7 @@ public class Table : MonoBehaviour
     Entity lastTaked = null;
     public Entity player;
     public Entity pc;
+    public Entity ally;
     public DeckController deck;
     Button[] playerButtons;
 
@@ -129,14 +130,14 @@ public class Table : MonoBehaviour
             if(c.value==1)
             {
                 HighLighAllCards();
-                yield return new WaitForSeconds(1f);
+                yield return new WaitForSeconds(0.75f);
                 for (int i = 0; i < tableCards.Count; i++)
                 {
                     takeCard(tableCards[i],e);
                 }
                 tableCards.Clear();
                 DeHighLighAllCards();
-                yield return new WaitForSeconds(1f);
+                yield return new WaitForSeconds(0.75f);
                 scopone.goToNextTurn();
                 yield break;
             }
@@ -155,7 +156,7 @@ public class Table : MonoBehaviour
                     HightLightSelectedCard(t);
                 }
                 //pause
-                yield return new WaitForSeconds(1.5f);
+                yield return new WaitForSeconds(1f);
                 //take the cards
                 foreach (var t in temp)
                 {
@@ -181,13 +182,13 @@ public class Table : MonoBehaviour
             removeCardFromTable(StaticFunctions.getTableIndex(tableCards,equal));
         }
         DeHighLighAllCards();
-        yield return new WaitForSeconds(1.5f);
+        yield return new WaitForSeconds(1f);
         //scopa check, if are not cardon table after taking add one point
        if (tableCards.Count<1)
         {
             Scopatxt.SetActive(true);
             Scopa();
-            yield return new WaitForSeconds(1.5f);
+            yield return new WaitForSeconds(0.75f);
             Scopatxt.SetActive(false);
         }
        if(scopone==null)
@@ -286,4 +287,11 @@ public class Table : MonoBehaviour
 
     //Scopone Update
 
+    public void goToTheEnd()
+    {
+        Debug.Log("fine");
+        cleanTable();
+        MultiplayerScoreMangager manager= GetComponent<MultiplayerScoreMangager>();
+        manager.ShowScores(this);
+    }
 }
