@@ -7,30 +7,51 @@ using UnityEngine.UI;
 
 public class Table : MonoBehaviour
 {
+    public bool Multiplayer = false;
     GameObject Scopatxt;
     public Image[] tablecardBorders;
     public List<Card> tableCards = new List<Card>();
     Image[] tablecards_images;
-    Entity currentPlayer=null;
+    public Entity currentPlayer=null;
+    public Entity[] allPlayers;
     Entity lastTaked = null;
     public Entity player;
     public Entity pc;
-    int currentTurn = 0;
-    [SerializeField]
-    Image playerUsedCard = null;
-    [SerializeField]
-    Image pcUsedCard = null;
- DeckController deck;
+    public DeckController deck;
     Button[] playerButtons;
+
+    ScopaManager scopa=null;
+    ScoponeManager scopone=null;
 
   
     void Start()
     {
-        tablecards_images = GetComponentsInChildren<Image>();
         
-       //deactive used card images
-       playerUsedCard.enabled = false;
-       pcUsedCard.enabled = false;
+        if(Multiplayer)
+        {
+            scopone = new ScoponeManager();
+            scopone.INIT(this);
+            
+        }
+        else
+        {
+            scopa = new ScopaManager();
+            scopa.Init(this);
+        }
+        tablecards_images = GetComponentsInChildren<Image>();
+        //deactive used card images
+        foreach (var p in allPlayers)
+        {
+            p.UsedCard.enabled = false;
+            if(p.isPlayer)
+            {
+                player = p;
+            }
+            else
+            {
+                pc = p;
+            }
+        }
         playerButtons = player.GetComponentsInChildren<Button>();
         //deactive yellow borders
         foreach(var b in tablecardBorders)
@@ -38,11 +59,21 @@ public class Table : MonoBehaviour
             b.enabled = false;
         }
         //initialize deck and pass this reference
-        deck =GetComponentInChildren<DeckController>();
-        deck.Init(this);
+        deck = GetComponentInChildren<DeckController>();
+        if (!Multiplayer)
+        {
+            
+            deck.Init(this);
+            currentPlayer = player;
+        }
+        else
+        {
+            deck.MultiplayerInit(this,allPlayers);
+            scopone.goToNextTurn();
+        }
         Scopatxt = GameObject.Find("Scopa");
         Scopatxt.SetActive(false);
-        currentPlayer = player;
+        
     }
 
     void Update()
@@ -82,53 +113,33 @@ public class Table : MonoBehaviour
     {
         currentPlayer.scopa++;
     }
-    //change turn
-    void goToNextTurn()
-    {
-        //if players don't have more card draw 3 
-        if (player.getNumOfCard() == 0 && pc.getNumOfCard() == 0)
-        {
-            deck.newTurn();
-        }
-        currentTurn++;
-        if (currentTurn%2==0)
-        {
-            //enable button for play cards
-            currentPlayer = player;
-            activePlayerButtons(true);
-        }
-        else
-        {
-            currentPlayer = pc;
-            //player can not play card's on enemy turn
-            activePlayerButtons(false);
-            pcTurnManagement();
-        }  
-    }
-    void pcTurnManagement()
-    {
-        //reset timer
-        pc.PcPlayCard();
-    }
    
-
-    public void PlayCard(Card c, Entity e)
+   public void PlayCard(Card c, Entity e)
     {
         StartCoroutine(playedCardUpdate(c, e));
     }
 
     IEnumerator playedCardUpdate(Card c,Entity e)
     {
-        //for see the played card in red or blue zone
-        if(e==player)
+        e.UsedCard.enabled = true;
+        e.UsedCard.sprite = c.img;
+        yield return new WaitForSeconds(0.5f);
+        if (scopone!=null)
         {
-            playerUsedCard.enabled = true;
-            playerUsedCard.sprite = c.img;
-        }
-        else
-        {
-            pcUsedCard.enabled = true;
-            pcUsedCard.sprite = c.img;
+            if(c.value==1)
+            {
+                HighLighAllCards();
+                yield return new WaitForSeconds(1f);
+                for (int i = 0; i < tableCards.Count; i++)
+                {
+                    takeCard(tableCards[i],e);
+                }
+                tableCards.Clear();
+                DeHighLighAllCards();
+                yield return new WaitForSeconds(1f);
+                scopone.goToNextTurn();
+                yield break;
+            }
         }
         //create temp card for check
         Card equal = StaticFunctions.getEqualCard(tableCards,c.value);
@@ -179,7 +190,15 @@ public class Table : MonoBehaviour
             yield return new WaitForSeconds(1.5f);
             Scopatxt.SetActive(false);
         }
-       goToNextTurn();
+       if(scopone==null)
+        {
+            scopa.goToNextTurn();
+        }
+       else
+        {
+            scopone.goToNextTurn();
+        }
+     
     }
 
     public void cleanTable()
@@ -216,12 +235,25 @@ public class Table : MonoBehaviour
     #region HighLight
     void DeHighLighAllCards()
     {
-        //make cards blanck
-        pcUsedCard.enabled = false;
-        playerUsedCard.enabled = false;
+        foreach(var p in allPlayers)
+        {
+            p.UsedCard.enabled = false;
+        }
         for (int i = 0; i < tablecards_images.Length; i++)
         {
           tablecardBorders[i].enabled = false;
+        }
+    }
+    void HighLighAllCards()
+    {
+        //make cards blanck
+        foreach (var p in allPlayers)
+        {
+            p.UsedCard.enabled = false;
+        }
+        for (int i = 0; i < tableCards.Count; i++)
+        {
+            tablecardBorders[i].enabled = true;
         }
     }
     void HightLightEqualCard(int c)
@@ -251,5 +283,7 @@ public class Table : MonoBehaviour
         }
     }
     #endregion
+
+    //Scopone Update
 
 }

@@ -6,6 +6,8 @@ using UnityEngine.UI;
 
 public class Entity : MonoBehaviour
 {
+    public Image hilightPlayer_img;
+    public Image UsedCard;
     public bool isPlayer = false;
     public Sprite back;
     public Sprite green;
@@ -16,6 +18,7 @@ public class Entity : MonoBehaviour
     public int points=0;
     Table table;
     public Card playedCard;
+    ScoponeManager scopone;
 
     public int getNumOfCard()
     {
@@ -34,6 +37,13 @@ public class Entity : MonoBehaviour
     {
         hand_images = GetComponentsInChildren<Image>();
         table = t;
+        HilightPlayer(false);
+    }
+    //init Multiplayer
+    public virtual void INIT(ScoponeManager sc)
+    {
+        hand_images = GetComponentsInChildren<Image>();
+        scopone = sc;
     }
     //remove card from hand and make in play
     public void PlayCard(int value)
@@ -46,8 +56,15 @@ public class Entity : MonoBehaviour
         hand_images[value].sprite = green;
         //disabilititate button
         hand_images[value].GetComponent<Button>().enabled = false;
-        //
-        table.PlayCard(playedCard, this);
+        if(scopone!=null)
+        {
+
+        }
+        else
+        {
+            table.PlayCard(playedCard, this);
+        }
+        
     }
     
     public void PcPlayCard()
@@ -70,8 +87,7 @@ public class Entity : MonoBehaviour
 
     }
 
-
-    //take new card , for player
+     //take new card , for player
     public void DrawCardFromDeck(Card c,int index)
     {
         hand.Add(c);
@@ -105,5 +121,11 @@ public class Entity : MonoBehaviour
     {
         collectedCards.Add(c);
     }
+
+    public void HilightPlayer(bool value)
+    {
+        hilightPlayer_img.enabled = value;
+    }
+
 }
 

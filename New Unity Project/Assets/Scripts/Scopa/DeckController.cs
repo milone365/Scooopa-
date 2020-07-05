@@ -116,6 +116,17 @@ public class DeckController : MonoBehaviour
         }
 
     }
+    void giveCardTenCards(Entity e)
+    {
+        if (cardEnded) return;
+        int spawned = 0;
+        while (spawned < 10)
+        {
+            e.DrawCardFromDeck(DrawedCard(), spawned);
+            spawned++;
+        }
+        
+    }
 
     public void newTurn()
     {
@@ -139,6 +150,7 @@ public class DeckController : MonoBehaviour
             deckImage.enabled = false;
         }
     }
+    //
     void GameOver()
     {
         table.cleanTable();
@@ -148,7 +160,34 @@ public class DeckController : MonoBehaviour
         gameover = true;
         ui.EndGamePanel();
     }
-
+    //
+    public void MultiplayerInit(Table t,Entity[] entities)
+    {
+        table = t;
+        player = table.player;
+        
+        foreach(var item in entities)
+        {
+            if(item!=player)
+            {
+                item.INIT(t);
+                //assign card to players
+                
+            }
+        }
+        //load deck
+        BuidDeck();
+        //initialize player and pc and pass table reference
+        player.INIT(t);
+       giveCardTenCards(player);
+        foreach (var item in entities)
+        {
+            if(item!=player)
+            giveCardTenCards(item);
+        }
+        deckImage = GameObject.Find("deckImage").GetComponent<Image>();
+        cardEnded = true;
+    }
 }
 
 [System.Serializable]

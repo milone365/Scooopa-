@@ -2064,6 +2064,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 414631bbd36d7004c8d4df2871a20e31, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  UsedCard: {fileID: 1012298225}
   isPlayer: 1
   back: {fileID: 21300000, guid: aa8214020238be34eab1880c0ed82d83, type: 3}
   green: {fileID: 21300000, guid: 11074cbfc53c12341a49796ede533424, type: 3}
@@ -4296,6 +4297,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 414631bbd36d7004c8d4df2871a20e31, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  UsedCard: {fileID: 730417055}
   isPlayer: 0
   back: {fileID: 21300000, guid: aa8214020238be34eab1880c0ed82d83, type: 3}
   green: {fileID: 21300000, guid: 11074cbfc53c12341a49796ede533424, type: 3}
@@ -5933,6 +5935,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 83d8507a1888a0647909658fe2c4580d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  Multiplayer: 0
   tablecardBorders:
   - {fileID: 119715638}
   - {fileID: 1420923533}
@@ -5947,10 +5950,10 @@ MonoBehaviour:
   - {fileID: 457887112}
   - {fileID: 190268965}
   tableCards: []
+  currentPlayer: {fileID: 0}
   player: {fileID: 500574157}
   pc: {fileID: 1083934482}
-  playerUsedCard: {fileID: 1012298225}
-  pcUsedCard: {fileID: 730417055}
+  deck: {fileID: 0}
 --- !u!1 &1646016297
 GameObject:
   m_ObjectHideFlags: 0
