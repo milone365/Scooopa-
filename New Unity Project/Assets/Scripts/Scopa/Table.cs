@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -11,6 +12,7 @@ public class Table : MonoBehaviour
     public List<Card> tableCards = new List<Card>();
     Image[] tablecards_images;
     Entity currentPlayer=null;
+    Entity lastTaked = null;
     public Entity player;
     public Entity pc;
     int currentTurn = 0;
@@ -180,6 +182,15 @@ public class Table : MonoBehaviour
        goToNextTurn();
     }
 
+    public void cleanTable()
+    {
+        for(int i=0;i<tableCards.Count;i++)
+        {
+            takeCard(tableCards[i],lastTaked);
+            removeCardFromTable(i);
+        }
+    }
+
     public void activePlayerButtons(bool value)
     {
         foreach(var b in playerButtons)
@@ -194,6 +205,11 @@ public class Table : MonoBehaviour
     void takeCard(Card c)
     {
         currentPlayer.CollectCard(c);
+        lastTaked = currentPlayer;
+    }
+    void takeCard(Card c,Entity e)
+    {
+        e.CollectCard(c);
     }
     #endregion
 

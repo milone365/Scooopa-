@@ -6,9 +6,11 @@ public class ScoreManager : MonoBehaviour
 {
     Entity player;
     Entity pc;
-    string winner = "Pc";
-    int playerPoints = 0;
-    int pcPoints;
+    
+    public int playerPoints = 0;
+    public int pcPoints;
+    
+
     private void Start()
     {
         player = FindObjectOfType<Table>().player;
@@ -16,8 +18,9 @@ public class ScoreManager : MonoBehaviour
     }
 
     //calcualte all points but not calculate premiere,that is in a different function  
-    public void calculatePoints(Entity e,List<Card>collected)
+    public void calculatePoints(Entity e)
     {
+        List<Card> collected = e.collectedCards;
         int totalscore = 0;
         //adding scopa point
         totalscore += e.scopa;
@@ -65,9 +68,33 @@ public class ScoreManager : MonoBehaviour
     }
     //
     //premiere
-    public void calcualtePremiere()
+    int calcualtePremiere(Entity e, List<Card> collected)
     {
-
+        int point = 0;
+        List<Card> golds = StaticFunctions.getAllCardOfSeed(collected, StaticStrings.gold);
+        List<Card> cup = StaticFunctions.getAllCardOfSeed(collected, StaticStrings.cup);
+        List<Card> sword = StaticFunctions.getAllCardOfSeed(collected, StaticStrings.sword);
+        List<Card> wand = StaticFunctions.getAllCardOfSeed(collected, StaticStrings.wand);
+        point += StaticFunctions.getHeightersPoint(golds);
+        point += StaticFunctions.getHeightersPoint(cup);
+        point += StaticFunctions.getHeightersPoint(sword);
+        point += StaticFunctions.getHeightersPoint(wand);
+        return point;
+    }
+    //premier check
+    public void PremiereCheck()
+    {
+        int playerScore = calcualtePremiere(player, player.collectedCards);
+        int pcScore = calcualtePremiere(pc, pc.collectedCards);
+        if(playerScore>pcScore)
+        {
+            playerPoints++;
+        }
+        else if(playerScore < pcScore)
+        {
+            pcPoints++;
+        }
     }
 
+    
 }

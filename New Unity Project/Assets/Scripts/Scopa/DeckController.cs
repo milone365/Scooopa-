@@ -14,7 +14,10 @@ public class DeckController : MonoBehaviour
     Entity pc;
     bool cardEnded = false;
     Image deckImage;
-    
+    ScoreManager score_manager;
+    UI_Manager ui;
+
+    public bool gameover = false;
     public void Init(Table t)
     {
         table = t;
@@ -30,6 +33,10 @@ public class DeckController : MonoBehaviour
         //assign card to players
         giveCardToPlayers();
         deckImage = GameObject.Find("deckImage").GetComponent<Image>();
+        score_manager = FindObjectOfType<ScoreManager>();
+        cardEnded = false;
+        ui = FindObjectOfType<UI_Manager>();
+        ui.INIT();
     }
 
     private void Update()
@@ -114,8 +121,11 @@ public class DeckController : MonoBehaviour
     {
         if(cardEnded)
         {
-            GameOver();
-            return;
+            if(!gameover)
+            {
+                GameOver();
+            }
+           return;
         }
         //reset hands list
         player.resetCardList();
@@ -131,8 +141,14 @@ public class DeckController : MonoBehaviour
     }
     void GameOver()
     {
-        Debug.Log("GAMEOVER");
+        table.cleanTable();
+        score_manager.PremiereCheck();
+        score_manager.calculatePoints(player);
+        score_manager.calculatePoints(pc);
+        gameover = true;
+        ui.EndGamePanel();
     }
+
 }
 
 [System.Serializable]
