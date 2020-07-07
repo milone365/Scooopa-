@@ -5,12 +5,14 @@ using UnityEngine.UI;
 
 public class B_Table : MonoBehaviour
 {
+    [SerializeField]
+    Mover mover = null;
     string Briscola;
     string commander;
     B_Deck deck;
     [HideInInspector]
     public Sprite green;
-    B_Entity[] players;
+    public B_Entity[] players;
     bool firstCard = true;
     B_Entity taker;
     int turnIndex = 0;
@@ -24,6 +26,7 @@ public class B_Table : MonoBehaviour
     public void INIT(B_Deck d)
     {
         deck = d;
+        if(players==null)
         players = FindObjectsOfType<B_Entity>();
         tablecardsimages = GetComponentsInChildren<Image>();
         taker = players[0];
@@ -48,6 +51,8 @@ public class B_Table : MonoBehaviour
         {
             firstCard = false;
             commander = c.seed;
+            if(mover!=null)
+            mover.setPosition(turnIndex);
         }
         //add card to the ground
         groundCards.Add(c);

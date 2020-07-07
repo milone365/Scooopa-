@@ -6,6 +6,7 @@ using UnityEngine.UI;
 public class B_Entity : MonoBehaviour
 {
     public bool isPlayer = false;
+    public bool ally = false;
     public List<Card> hand;
     [HideInInspector]
     public string Briscola;
@@ -128,5 +129,15 @@ public class B_Entity : MonoBehaviour
    public void HilightBorder(bool var)
     {
         border.enabled = var;
+    }
+
+    public int getPoints()
+    {
+        int value = 0;
+        foreach(var item in collectedCards)
+        {
+            value += StaticFunctions.ConvertToB_Point(item.value);
+        }
+        return value;
     }
 }

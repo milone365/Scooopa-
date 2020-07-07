@@ -199,9 +199,19 @@ public class StaticFunctions : MonoBehaviour
                 {
                     int tmp = ConvertToB_Point(temp.value);
                     int itm = ConvertToB_Point(item.value);
+                    //calulate briscola point and return most hight
                     if (tmp < itm)
                     {
                         temp = item;
+                    }
+                    //in a briscola cards there are a card with zero ponti
+                    //in that case return  hightest card
+                    else if(tmp == itm)
+                    {
+                        if(temp.value<item.value)
+                        {
+                            temp = item;
+                        }
                     }
                 }
             }
@@ -221,7 +231,7 @@ public class StaticFunctions : MonoBehaviour
         //return automatically most heighter card based on first card played
         Card cmd = null;
         cmd = getHeightestOfSeed(cards, commander);
-
+       
         return cmd;
        
     }

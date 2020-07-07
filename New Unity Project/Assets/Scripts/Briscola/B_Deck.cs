@@ -15,7 +15,7 @@ public class B_Deck : MonoBehaviour
     B_Table table;
     [HideInInspector]
     public B_Entity player;
-
+    bool Exit = false;
     private void Start()
     {
         ui = FindObjectOfType<B_UI>();
@@ -45,7 +45,7 @@ public class B_Deck : MonoBehaviour
 
     private void Update()
     {
-        if(cardEnded)
+        if(cardEnded&&!Exit)
         {
             GameOverTest();
         }
@@ -194,6 +194,7 @@ public class B_Deck : MonoBehaviour
         }
         if (GameOver)
         {
+            Exit = true;
             switch(GameType)
             {
                 case gameType.two:
@@ -204,7 +205,7 @@ public class B_Deck : MonoBehaviour
                     ui.MultiplayerEnd();
                     break;
                 case gameType.five:
-                    ui.callingEnd();
+                    ui.MultiplayerEnd();
                     break;
             }
         }
