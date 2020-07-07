@@ -196,4 +196,5 @@ public class Card
     public int value = 0;
     public string seed = "";
     public Sprite img;
+    public B_Entity playerRef;
 }

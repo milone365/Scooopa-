@@ -158,4 +158,71 @@ public class StaticFunctions : MonoBehaviour
     {
         return cards.Count;
     }
+
+
+    ////////////////briscola region/////////////////////////
+
+    //converte card value to briscola value
+    public static int ConvertToB_Point(int p)
+    {
+        int rt = 0;
+        switch(p)
+        {
+            case 1:rt = 11;
+                break;
+            case 3:rt = 10;
+                break;
+            case 10:rt = 4;
+                break;
+            case 9: rt = 3;
+                break;
+            case 8:rt = 2;
+                break;
+            default:
+                break;
+        }
+        return rt;
+    }
+    //
+   public static Card getHeightestOfSeed(List<Card> cards, string seed)
+    {
+        Card temp = null;
+        foreach (var item in cards)
+        {
+            if (item.seed == seed)
+            {
+                if (temp == null)
+                {
+                    temp = item;
+                }
+                else
+                {
+                    int tmp = ConvertToB_Point(temp.value);
+                    int itm = ConvertToB_Point(item.value);
+                    if (tmp < itm)
+                    {
+                        temp = item;
+                    }
+                }
+            }
+        }
+        return temp;
+    }
+   
+    //commander is the first card of the turn
+    public static Card getWinnerCard(List<Card>cards,string bricola,string commander)
+    {
+        //return automatically most heighter briscola card like a winner
+        Card b_temp = getHeightestOfSeed(cards,bricola);
+        if (b_temp != null)
+        {
+            return b_temp;
+        }
+        //return automatically most heighter card based on first card played
+        Card cmd = null;
+        cmd = getHeightestOfSeed(cards, commander);
+
+        return cmd;
+       
+    }
 }
