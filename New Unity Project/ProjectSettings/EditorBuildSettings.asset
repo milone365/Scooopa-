@@ -17,4 +17,10 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Scopone.unity
     guid: d7cdf139d6edc0d4a99fd358a61ff903
+  - enabled: 1
+    path: Assets/Scenes/Briscola.unity
+    guid: d98634c1600149b4fbdafce887cd5468
+  - enabled: 1
+    path: Assets/Scenes/Briscolone.unity
+    guid: 02369b848cd6f8d45b244672bd85c7ce
   m_configObjects: {}

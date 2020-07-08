@@ -8,7 +8,8 @@ public class B_Table : MonoBehaviour
     [SerializeField]
     Mover mover = null;
     string Briscola;
-    string commander;
+    [HideInInspector]
+    public string commander;
     B_Deck deck;
     [HideInInspector]
     public Sprite green;

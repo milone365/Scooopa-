@@ -2064,6 +2064,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 414631bbd36d7004c8d4df2871a20e31, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  hilightPlayer_img: {fileID: 1139660350}
   UsedCard: {fileID: 1012298225}
   isPlayer: 1
   back: {fileID: 21300000, guid: aa8214020238be34eab1880c0ed82d83, type: 3}
@@ -2075,6 +2076,7 @@ MonoBehaviour:
     value: 0
     seed: 
     img: {fileID: 0}
+    playerRef: {fileID: 0}
 --- !u!1 &518699089
 GameObject:
   m_ObjectHideFlags: 0
@@ -3967,7 +3969,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &976823467
 RectTransform:
   m_ObjectHideFlags: 0
@@ -4297,6 +4299,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 414631bbd36d7004c8d4df2871a20e31, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  hilightPlayer_img: {fileID: 108423696}
   UsedCard: {fileID: 730417055}
   isPlayer: 0
   back: {fileID: 21300000, guid: aa8214020238be34eab1880c0ed82d83, type: 3}
@@ -4308,6 +4311,7 @@ MonoBehaviour:
     value: 0
     seed: 
     img: {fileID: 0}
+    playerRef: {fileID: 0}
 --- !u!1 &1099043716
 GameObject:
   m_ObjectHideFlags: 0
@@ -4325,7 +4329,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1099043717
 RectTransform:
   m_ObjectHideFlags: 0
@@ -5951,8 +5955,10 @@ MonoBehaviour:
   - {fileID: 190268965}
   tableCards: []
   currentPlayer: {fileID: 0}
+  allPlayers: []
   player: {fileID: 500574157}
   pc: {fileID: 1083934482}
+  ally: {fileID: 0}
   deck: {fileID: 0}
 --- !u!1 &1646016297
 GameObject:

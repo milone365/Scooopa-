@@ -183,8 +183,18 @@ public class StaticFunctions : MonoBehaviour
         }
         return rt;
     }
+    public static int GetGroundPoints(List<Card> cards)
+    {
+        int value = 0;
+        foreach(var c in cards)
+        {
+            int temp = ConvertToB_Point(c.value);
+            value += temp;
+        }
+        return value;
+    }
     //
-   public static Card getHeightestOfSeed(List<Card> cards, string seed)
+    public static Card getHeightestOfSeed(List<Card> cards, string seed)
     {
         Card temp = null;
         foreach (var item in cards)
@@ -218,7 +228,6 @@ public class StaticFunctions : MonoBehaviour
         }
         return temp;
     }
-   
     //commander is the first card of the turn
     public static Card getWinnerCard(List<Card>cards,string bricola,string commander)
     {
@@ -234,5 +243,18 @@ public class StaticFunctions : MonoBehaviour
        
         return cmd;
        
+    }
+    
+    //contoll if there are anybriscola on field
+    public static bool GetBriscolaOnField(List<Card> cards, string bricola)
+    {
+        foreach (var item in cards)
+        {
+            if (item.seed == bricola)
+            {
+                return true;
+            }
+        }
+        return false;
     }
 }

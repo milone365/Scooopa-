@@ -5,7 +5,7 @@ using UnityEngine;
 public class Mover : MonoBehaviour
 {
     [SerializeField]
-    Transform[] positions;
+    Transform[] positions=null;
 
     public void setPosition(int i)
     {

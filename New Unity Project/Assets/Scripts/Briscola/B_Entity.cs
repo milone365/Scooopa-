@@ -93,13 +93,21 @@ public class B_Entity : MonoBehaviour
         {
             return;
         }
-        playedCard = hand[rnd];
+        Card aiCard = ChoseCard_WithAI();
+        //if selected card is null chose random
+        if(aiCard==null)
+        {
+            aiCard = hand[rnd];
+        }
+        //caluculte card position
+        int index = getCardIndex(aiCard);
+        playedCard = aiCard;
         playedCard.playerRef = this;
         //set image
-        playedCard_img.sprite = hand[rnd].img;
+        playedCard_img.sprite = aiCard.img;
         //remove from list
-        hand.RemoveAt(rnd);
-        images[rnd].sprite = green;
+        hand.RemoveAt(index);
+        images[index].sprite = green;
         //send to table
         table.PlayCard(this, playedCard);
         
@@ -139,5 +147,135 @@ public class B_Entity : MonoBehaviour
             value += StaticFunctions.ConvertToB_Point(item.value);
         }
         return value;
+    }
+
+    Card  ChoseCard_WithAI()
+    {
+        int groundPoints = StaticFunctions.GetGroundPoints(table.groundCards);
+        bool briscolaOnField = StaticFunctions.GetBriscolaOnField(table.groundCards, Briscola);
+        
+        if(groundPoints>10)
+        {
+            if(briscolaOnField)
+            {
+                //return most hight card if are more points
+                if(groundPoints>15)
+                {
+                   Card c= GetCommanderSeed(table.groundCards,Briscola);
+                    //if have briscola play that or use not point card
+                    if(c!=null)
+                    {
+                        return c;
+                    }
+                    else
+                    {
+                        return getNotPointCard();
+                    }
+                }
+                else
+                {
+                    return null;
+                }
+                
+            }
+            else
+            {
+                //return commander if have it or return briscola
+                Card commander = GetCommanderSeed(table.groundCards, table.commander);
+                if(commander!=null)
+                {
+                    return commander;
+                }
+                else
+                {
+                    Card br= getBriscolaFromHand();
+                    if(br!=null)
+                    {
+                        return br;
+                    }
+                    else
+                    {
+                        return getNotPointCard();
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
+    //select briscola card from hand
+    Card getBriscolaFromHand()
+    {
+        foreach(var item in hand)
+        {
+            if(item.seed==Briscola)
+            {
+                return item;
+            }
+        }
+        return null;
+    }
+    //select not point card from hand
+    Card getNotPointCard()
+    {
+        foreach (var item in hand)
+        {
+            int pt = StaticFunctions.ConvertToB_Point(item.value);
+            if (pt == 0)
+            {
+                return item;
+            }
+        }
+        return null;
+    }
+     
+    //select top card with commander seed
+    Card GetCommanderSeed(List<Card>ground,string s)
+    {
+        //create temporary list of commander card
+        List<Card> commanders = new List<Card>();
+        foreach(var item in hand)
+        {
+            if(item.seed==s)
+            {
+                commanders.Add(item);
+            }
+        }
+        //confront two list
+        for(int i=0;i<ground.Count;i++)
+        {
+            for(int j=0;j<commanders.Count;j++)
+            {
+                int comVal = StaticFunctions.ConvertToB_Point(commanders[j].value);
+                int tbVal= StaticFunctions.ConvertToB_Point(ground[i].value);
+                //return most height briscola value
+                if(comVal>tbVal)
+                {
+                    return commanders[j];
+                }
+                //if value of card is zero return normal heighter card
+                else if(comVal==tbVal)
+                {
+                    comVal = commanders[j].value;
+                    tbVal = ground[i].value;
+                    if(comVal>tbVal)
+                    {
+                        return commanders[j];
+                    }
+                }
+            }
+        }
+        return null;
+    }
+    int getCardIndex(Card c)
+    {
+        for(int i=0;i<hand.Count;i++)
+        {
+            if(c==hand[i])
+            {
+                return i;
+            }
+        }
+        return 0;
     }
 }

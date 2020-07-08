@@ -38,12 +38,14 @@ public class Table : MonoBehaviour
         {
             scopa = new ScopaManager();
             scopa.Init(this);
+            allPlayers = FindObjectsOfType<Entity>();
         }
         tablecards_images = GetComponentsInChildren<Image>();
         //deactive used card images
         foreach (var p in allPlayers)
         {
-            p.UsedCard.enabled = false;
+            
+            //p.UsedCard.enabled = false;
             if(p.isPlayer)
             {
                 player = p;
@@ -136,7 +138,7 @@ public class Table : MonoBehaviour
                     takeCard(tableCards[i],e);
                 }
                 tableCards.Clear();
-                DeHighLighAllCards();
+                HighLighAllCards();
                 yield return new WaitForSeconds(0.75f);
                 scopone.goToNextTurn();
                 yield break;
@@ -168,6 +170,7 @@ public class Table : MonoBehaviour
             {
                 addCardToTable(c);
             }
+          
            
         }
         else
@@ -182,9 +185,8 @@ public class Table : MonoBehaviour
             removeCardFromTable(StaticFunctions.getTableIndex(tableCards,equal));
         }
         DeHighLighAllCards();
-        yield return new WaitForSeconds(1f);
         //scopa check, if are not cardon table after taking add one point
-       if (tableCards.Count<1)
+        if (tableCards.Count<1)
         {
             Scopatxt.SetActive(true);
             Scopa();
@@ -199,7 +201,7 @@ public class Table : MonoBehaviour
         {
             scopone.goToNextTurn();
         }
-     
+        
     }
 
     public void cleanTable()
@@ -236,9 +238,9 @@ public class Table : MonoBehaviour
     #region HighLight
     void DeHighLighAllCards()
     {
-        foreach(var p in allPlayers)
+        for(int i=0;i<allPlayers.Length;i++)
         {
-            p.UsedCard.enabled = false;
+            allPlayers[i].CleanImage();
         }
         for (int i = 0; i < tablecards_images.Length; i++)
         {
@@ -247,11 +249,6 @@ public class Table : MonoBehaviour
     }
     void HighLighAllCards()
     {
-        //make cards blanck
-        foreach (var p in allPlayers)
-        {
-            p.UsedCard.enabled = false;
-        }
         for (int i = 0; i < tableCards.Count; i++)
         {
             tablecardBorders[i].enabled = true;

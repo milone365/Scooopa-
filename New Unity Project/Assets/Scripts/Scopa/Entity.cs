@@ -175,7 +175,13 @@ public class Entity : MonoBehaviour
 
     public void HilightPlayer(bool value)
     {
-        hilightPlayer_img.enabled = value;
+       hilightPlayer_img.enabled = value;
+       
+    }
+
+    public void CleanImage()
+    {
+        UsedCard.sprite = green;
     }
 
 }
